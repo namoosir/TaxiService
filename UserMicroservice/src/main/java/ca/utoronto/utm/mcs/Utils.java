@@ -13,4 +13,8 @@ public class Utils {
          return br.lines().collect(Collectors.joining(System.lineSeparator()));
       }
    }
+
+   public static String hash(String str) {
+      return String.valueOf(str.hashCode());
+   }
 }
