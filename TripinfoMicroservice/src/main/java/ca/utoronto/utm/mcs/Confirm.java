@@ -21,13 +21,13 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 
-public class test implements HttpHandler {
+public class Confirm implements HttpHandler {
 
     MongoClient client;
     MongoDatabase database;
     MongoCollection<Document> trip;
 
-    public test() throws ClassNotFoundException {
+    public Confirm() throws ClassNotFoundException {
         client = Utils.client;
         database = Utils.database;
         trip = Utils.trip;
@@ -36,29 +36,19 @@ public class test implements HttpHandler {
     @Override
     public void handle(HttpExchange r) throws IOException {
        try {
-          if (r.getRequestMethod().equals("PUT")) {
-             putRoad(r);
+          if (r.getRequestMethod().equals("POST")) {
+             addTrip(r);
           }
        } catch (Exception e) {
           System.out.println("Error Occurred! Msg:   " + e);
        }
     }
     
-    private void putRoad(HttpExchange r) throws IOException, JSONException {
-        System.out.println("jere");
+    private void addTrip(HttpExchange r) throws IOException, JSONException {
+        String body = Utils.convert(r.getRequestBody());
+        JSONObject res = new JSONObject();
+        JSONObject req = new JSONObject(body);
 
-        Document newdoc = new Document()
-        .append("title", "Ski Bloopers")
-        .append("genres", Arrays.asList("Documentary", "Comedy"));
-
-        System.out.println(newdoc.toJson());
-
-        trip.insertOne(newdoc);
-
-        System.out.println(newdoc.get("_id").toString());
-
-        System.out.println("Success! Inserted document id: ");
-
-
+        //if (req.has("driver") && req.has("passenger") && req.has("startTime"))
     }
 }

@@ -29,7 +29,7 @@ public class Utils {
 
    //MongoClient client = MongoClients.create("mongodb://mongodb:27017");
    
-   public static MongoClient client = MongoClients.create("mongodb://root:123456@mongodb:27017/?authSource=trip");
+   public static MongoClient client = MongoClients.create("mongodb://root:123456@mongodb:27017");
    public static MongoDatabase database = client.getDatabase("trip");
    public static MongoCollection<Document> trip = database.getCollection("trip2");
 
