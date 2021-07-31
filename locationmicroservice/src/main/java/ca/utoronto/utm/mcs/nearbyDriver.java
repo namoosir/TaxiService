@@ -30,32 +30,26 @@ public class nearbyDriver implements HttpHandler {
         int statusCode = 400;
         String requestURI = r.getRequestURI().toString();
         String[] uriSplitter = requestURI.split("/");
-
+        JSONObject res = new JSONObject();
+        
         if (uriSplitter.length != 3) {
-            JSONObject data = new JSONObject();
-            data.put("status", "BAD REQUEST");
-            String response = data.toString();
-            r.sendResponseHeaders(statusCode, response.length());
-            OutputStream os = r.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
+            error(statusCode, res, r);
             return;
         }
 
-        JSONObject res = new JSONObject();
-        String uid = uriSplitter[2].split('?radius=')[0];
-        String radiusString = uriSplitter[2].split('?radius=')[1];
+        String uid = uriSplitter[2].split("?radius=")[0];
+        String radiusString = uriSplitter[2].split("?radius=")[1];
         int radius;
 
-        if (uid.isEmpty() || radius.isBlank()) {
+        if (uid.isEmpty() || radiusString.isBlank()) {
             error(statusCode, res, r);
             return;
         }
 
         try {
-            radius = Double.parseDouble(radiusString); //is acctually a double
+            radius = Integer.parseInt(radiusString); //is acctually a double
         } catch(Exception e){
-            error(statusCode, res,r);
+            error(statusCode, res, r);
             return;
         }
 
