@@ -17,17 +17,13 @@ public class Register implements HttpHandler {
         String url = "jdbc:postgresql://postgres:5432/root";
         Class.forName("org.postgresql.Driver");
         this.connection = DriverManager.getConnection(url, "root", "123456");
-        System.out.println("broski?");
     }
 
     @Override
     public void handle(HttpExchange r) throws IOException {
-        System.out.println("dumbfuck?");
 
         try {
             if (r.getRequestMethod().equals("POST")) {
-                System.out.println("hi?");
-
                 handlePOST(r);
             }
         } catch (Exception e) {
@@ -57,11 +53,16 @@ public class Register implements HttpHandler {
             String email = deserialized.getString("email");
             String password = Utils.hash(deserialized.getString("password"));
 
-            String prepare = "INSERT INTO Users (email, prefer_name, password) VALUES (" + email + ',' + name + ',' + password + ")";
+            String prepare =
+                "INSERT INTO Users (redeemedCoupons, availableCoupons, email, prefer_name, password, rides) VALUES (ARRAY[]::integer[],ARRAY[]::integer[], ?, ?, ?, ?)";
+
             PreparedStatement ps = this.connection.prepareStatement(prepare);
-            System.out.println("here3");
+            ps.setString(1, email);
+            ps.setString(2, name);
+            ps.setString(3, password);     
+            ps.setInt(4, 0);
+
             int a = ps.executeUpdate();
-            System.out.println("hello");
 
             if (a > 0) {
                 JSONObject res = new JSONObject();
@@ -81,6 +82,7 @@ public class Register implements HttpHandler {
                 os.close();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             JSONObject res = new JSONObject();
             res.put("status", "INTERNAL SERVER ERROR");
             String response = res.toString();
