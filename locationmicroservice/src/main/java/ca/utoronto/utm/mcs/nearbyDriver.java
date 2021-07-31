@@ -30,10 +30,8 @@ public class nearbyDriver implements HttpHandler {
         int statusCode = 400;
         String requestURI = r.getRequestURI().toString();
         String[] uriSplitter = requestURI.split("/");
-        //System.out.println(Arrays.toString(uriSplitter));
-        // if there are extra url params send 400 and return
-        //PRINT A NORMAL RESPONSE AND SEE HOW MUCH SHOULD BE THE LENGTH
-        if (uriSplitter.length != 4) {
+
+        if (uriSplitter.length != 3) {
             JSONObject data = new JSONObject();
             data.put("status", "BAD REQUEST");
             String response = data.toString();
@@ -43,20 +41,25 @@ public class nearbyDriver implements HttpHandler {
             os.close();
             return;
         }
+
         JSONObject res = new JSONObject();
-        String uid = uriSplitter[2]; //check if this si the right number
-        if (uid.isEmpty()) {
+        String uid = uriSplitter[2].split('?radius=')[0];
+        String radiusString = uriSplitter[2].split('?radius=')[1];
+        int radius;
+
+        if (uid.isEmpty() || radius.isBlank()) {
             error(statusCode, res, r);
             return;
         }
 
         try {
-            int radius = Integer.parseInt(uriSplitter[3]); //is acctually a double
+            radius = Double.parseDouble(radiusString); //is acctually a double
         } catch(Exception e){
             error(statusCode, res,r);
             return;
         }
 
+        //what to do???????
         String getDriverQuery = "MATCH (n: user {uid :$x}) RETURN n.longitude,n.latitude,n.street_at";
 
         try (Session session = Utils.driver.session()) {
