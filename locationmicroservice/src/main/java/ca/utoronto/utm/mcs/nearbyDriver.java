@@ -10,6 +10,7 @@ import com.sun.net.httpserver.HttpHandler;
 import org.neo4j.driver.Record;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -32,79 +33,74 @@ public class nearbyDriver implements HttpHandler {
         String[] uriSplitter = requestURI.split("/");
         JSONObject res = new JSONObject();
         
-        if (uriSplitter.length != 3) {
-            error(statusCode, res, r);
+        if (uriSplitter.length != 4) {
+            Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
-
-        String uid = uriSplitter[2].split("?radius=")[0];
-        String radiusString = uriSplitter[2].split("?radius=")[1];
+        String uid = uriSplitter[3].split("\\?radius=")[0];
+        String radiusString = uriSplitter[3].split("\\?radius=")[1];
         int radius;
 
+        System.out.println(uid);      
+        System.out.println(radiusString);     
+
         if (uid.isEmpty() || radiusString.isBlank()) {
-            error(statusCode, res, r);
+            Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
 
         try {
-            radius = Integer.parseInt(radiusString); //is acctually a double
+            radius = Integer.parseInt(radiusString); 
         } catch(Exception e){
-            error(statusCode, res, r);
+            Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
-
-        //what to do???????
-        String getDriverQuery = "MATCH (n: user {uid :$x}) RETURN n.longitude,n.latitude,n.street_at";
-
+        
+        String getUserQuery = "MATCH (n:user {uid:$z}) RETURN n.longitude,n.latitude,n.street_at";
+        String getLocationQuery = "MATCH (l:user {is_driver:$a}) WHERE distance( point({longitude: l.longitude, latitude: l.latitude}), point({ latitude: $x, longitude: $y})) < $z RETURN l";
+        
         try (Session session = Utils.driver.session()) {
-            Result result = session.run(getDriverQuery, parameters("x", uid));
-            if (result.hasNext()) {
+            Result userRes = session.run(getUserQuery, parameters("z", uid));
+            
+            if (userRes.hasNext()) {
 
-                Record user = result.next();
+                Record user = userRes.next();
                 Double longitude = user.get("n.longitude").asDouble();
                 Double latitude = user.get("n.latitude").asDouble();
-                String street = user.get("n.street_at").asString();
 
-                statusCode = 200;
-                JSONObject data = new JSONObject();
-                data.put("longitude", longitude);
-                data.put("latitude", latitude);
-                data.put("street", street);
-                res.put("status", "OK");
-                res.put("data", data);
-                String response = res.toString();
-                r.sendResponseHeaders(statusCode, response.length());
-                OutputStream os = r.getResponseBody();
-                os.write(response.getBytes());
-                os.close();
+                Result locationRes = session.run(getLocationQuery, parameters("a", true, "x", latitude, "y", longitude, "z", radius*1000));
+
+                if (locationRes.hasNext()) {
+                    List<Record> drivers = locationRes.list();
+                    for (Record record : drivers) {
+                        JSONObject d = new JSONObject();
+                        String id = record.get("l").get("uid").asString();
+                        Double longitudeString = record.get("l").get("longitude").asDouble();
+                        Double latitudeString = record.get("l").get("latitude").asDouble();
+                        String streetString = record.get("l").get("street_at").asString();
+                        
+                        d.put("longitude",longitudeString);
+                        d.put("latitude", latitudeString);
+                        d.put("street", streetString);
+                        res.put(id, d);                        
+                    }     
+                    res.put("status", "OK");
+
+                    String response = res.toString();
+                    r.sendResponseHeaders(200, response.length());
+                    OutputStream os = r.getResponseBody();
+                    os.write(response.getBytes());
+                    os.close();     
+                }
+                else {
+                    Utils.error(404, res, r, "NO NEARBY DRIVERS FOUND");
+                }
             } else {
-                statusCode = 404;
-                JSONObject data = new JSONObject();
-                data.put("status", "NOT FOUND");
-                String response = data.toString();
-                r.sendResponseHeaders(statusCode, response.length());
-                OutputStream os = r.getResponseBody();
-                os.write(response.getBytes());
-                os.close();
+                Utils.error(404, res, r, "USER NOT FOUND");
             }
         } catch (Exception e) {
-            statusCode = 500;
-            JSONObject data = new JSONObject();
-            data.put("status", "INTERNAL SERVER ERROR");
-            String response = data.toString();
-            r.sendResponseHeaders(statusCode, response.length());
-            OutputStream os = r.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
+            e.printStackTrace();
+            Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }
-    }
-
-    private void error(int statusCode, JSONObject res, HttpExchange r) throws IOException, JSONException {
-        res.put("status", "BAD REQUEST");
-        String response = res.toString();
-        r.sendResponseHeaders(statusCode, response.length());
-        OutputStream os = r.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
     }
 }
