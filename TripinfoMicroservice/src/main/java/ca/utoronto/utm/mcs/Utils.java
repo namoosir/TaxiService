@@ -22,6 +22,14 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 
+import java.io.OutputStream;
+import java.net.http.HttpClient;
+import java.time.Duration;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import org.json.*;
+
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Updates.*;
 
@@ -32,6 +40,11 @@ public class Utils {
    public static MongoClient client = MongoClients.create("mongodb://root:123456@mongodb:27017");
    public static MongoDatabase database = client.getDatabase("trip");
    public static MongoCollection<Document> trip = database.getCollection("trip2");
+
+   public static  HttpClient httpClient = HttpClient.newBuilder()
+   .version(HttpClient.Version.HTTP_2)
+   .connectTimeout(Duration.ofSeconds(10))
+   .build();
 
    public static String convert(InputStream inputStream) throws IOException {
       try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -47,4 +60,13 @@ public class Utils {
          return false;
       }
    }
+
+   public static void error(int statusCode, JSONObject res, HttpExchange r, String s) throws IOException, JSONException {
+      res.put("status", s);
+      String response = res.toString();
+      r.sendResponseHeaders(statusCode, response.length());
+      OutputStream os = r.getResponseBody();
+      os.write(response.getBytes());
+      os.close();
+  }
 }
