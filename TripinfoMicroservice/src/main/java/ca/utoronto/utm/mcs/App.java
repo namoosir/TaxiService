@@ -10,13 +10,12 @@ public class App {
 
    public static void main(String[] args) throws IOException, ClassNotFoundException {
       HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", PORT), 0);
-      server.createContext("/hi", new test());
-      server.createContext("/trip/request", new Request()); // POST /trip/request SHOULD BE GET, ASK A QUEWRION ABOU ZTHIS
-      // server.createContext("/trip/confirm", new confirm());
-      // server.createContext("/trip/", new trip());
-      // server.createContext("/trip/passenger/", new passenger());
-      // server.createContext("/trip/driver/", new driver());
-      // server.createContext("/trip/driverTime/", new driverTime());
+      server.createContext("/trip/request", new Request());
+      server.createContext("/trip/confirm", new Confirm());
+      server.createContext("/trip/", new Trip());
+      server.createContext("/trip/passenger/", new Passenger());
+      server.createContext("/trip/driver/", new Driver());
+      server.createContext("/trip/driverTime/", new DriverTime());
       server.start();
       System.out.printf("Server started on port %d...\n", PORT);
    }

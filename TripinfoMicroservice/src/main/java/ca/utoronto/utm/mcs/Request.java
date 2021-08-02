@@ -15,10 +15,6 @@ import java.sql.*;
 import java.util.*;
 
 import org.bson.Document;
-
-import java.util.Arrays;
-import java.util.HashMap;
-
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import com.mongodb.MongoException;
@@ -60,8 +56,12 @@ public class Request implements HttpHandler {
         int statusCode = 400;
         String uid;
         int radius;
+        ArrayList<String> finalBody = new ArrayList<String>();
 
-        if(!req.has("uid") || !req.has("radius")) Utils.error(statusCode, res, r, "BAD REQUEST");
+        if(!req.has("uid") || !req.has("radius")){
+            Utils.error(statusCode, res, r, "BAD REQUEST");
+            return;
+        }
 
         try {
             uid = req.getString("uid");
@@ -71,9 +71,9 @@ public class Request implements HttpHandler {
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
-
-        String url = "http://localhost:8000/location/nearbyDriver/" + uid + "?radius=" + radius;
-        System.out.println("the url is: " + url);
+        
+   
+        String url = "http://locationmicroservice:8000/location/nearbyDriver/" + uid + "?radius=" + radius;
 
         try {
 
@@ -84,30 +84,35 @@ public class Request implements HttpHandler {
             .header("Content-Type", "application/json") */
             .build();
 
-            System.out.println("abot to send reqesut");
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // print status code
-            System.out.println(response.statusCode());
+            JSONObject jsonObject = new JSONObject(response.body());
 
-            // print response body
-            System.out.println(response.body());
-            // print status code
-            System.out.println(response.statusCode());
+            if(response.statusCode()!=200){
+                String errorResponse = jsonObject.getString("status");
+                Utils.error(response.statusCode(), res, r, errorResponse);
+                return;
+            }
 
-            // print response body
-            System.out.println(response.body());
+            Iterator<String> keys = jsonObject.keys();
+
+            while(keys.hasNext()) {
+                String key = keys.next();
+                if (!key.equals("status")){
+                    finalBody.add(key);
+                }
+            }
+
+            res.put("data", finalBody);
+            res.put("status", "OK");
+            String myResponse = res.toString();
+            r.sendResponseHeaders(200, myResponse.length());
+            OutputStream os = r.getResponseBody();
+            os.write(myResponse.getBytes());
+            os.close();  
             
         } catch (Exception e) {
-            System.out.println("error\n");
+            Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }
-/*    
-        String response = res.toString();
-        r.sendResponseHeaders(statusCode, response.length());
-        OutputStream os = r.getResponseBody();
-        os.write(response.getBytes());
-        os.close(); */
-
-
     }
 }
