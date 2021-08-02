@@ -15,6 +15,8 @@ public class App {
       server.createContext("/location/road", new road());
       server.createContext("/location/hasRoute", new route());
       server.createContext("/location/route", new route());
+      server.createContext("/location/nearbyDriver", new nearbyDriver());
+      server.createContext("/location/navigation", new navigation());
       server.start();
       System.out.printf("Server started on port %d...\n", PORT);
    }
