@@ -38,12 +38,13 @@ public class navigation implements HttpHandler {
         JSONObject res = new JSONObject();
         JSONObject res2 = new JSONObject();
         JSONObject resFinal = new JSONObject();
+
         
         if (uriSplitter.length != 4) {
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
-        
+
         String driverUid = uriSplitter[3].split("\\?passengerUid=")[0];
         String passengerUid = uriSplitter[3].split("\\?passengerUid=")[1];
 
@@ -89,8 +90,6 @@ public class navigation implements HttpHandler {
 
             Segment hi = null;
 
-            
-
             for (Segment segment : a) { 
                 if(segment.end().get("name").asString() == road2) break;
                 JSONObject curRoad = new JSONObject();   
@@ -117,6 +116,7 @@ public class navigation implements HttpHandler {
             resFinal.put("status", "OK");
 
             String response = resFinal.toString();
+
             r.sendResponseHeaders(200, response.length());
             OutputStream os = r.getResponseBody();
             os.write(response.getBytes());
