@@ -11,7 +11,9 @@ public class App {
 
    public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
       HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", PORT), 0);
-      server.createContext("/user", new User());
+      server.createContext("/user/register", new Register());
+      server.createContext("/user/login", new Login());
+      server.createContext("/user/", new User());
       server.start();
       System.out.printf("Server started on port %d...\n", PORT);
    }
