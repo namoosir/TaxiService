@@ -89,21 +89,23 @@ public class DriverTime implements HttpHandler {
             return;
         }
 
-        String id = uriSplitter[3];
+        String id1 = uriSplitter[3];
 
-        if (id.isEmpty()) {
+        if (id1.isEmpty()) {
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
 
+        System.out.println("about to try");
 
         try {
             BasicDBObject query = new BasicDBObject();
+            ObjectId id = new ObjectId(id1);
             query.put("_id", id);
     
             FindIterable<Document> docs = trip.find(query);
 
-            if (docs == null) {
+            if (docs.first() == null) {
                 Utils.error(404, res, r, "NO TRIPS FOUND");
                 return;
             }
@@ -113,7 +115,9 @@ public class DriverTime implements HttpHandler {
                 passengerUid = doc.get("passenger").toString();
             }
 
-            String url = "http://locationmicroservice:8000/location/navigation/" + driverUid + "passengerUid=" + passengerUid;
+            String url = "http://locationmicroservice:8000/location/navigation/" + driverUid + "?passengerUid=" + passengerUid;
+
+            System.out.println("this is the url " +url);
 
             HttpRequest request = HttpRequest.newBuilder()
             .GET()
@@ -130,12 +134,12 @@ public class DriverTime implements HttpHandler {
                 return;
             }
 
-            total_time = jsonObject.getInt("total_time");
+            total_time = jsonObject.getJSONObject("data").getInt("total_time");
 
             JSONObject res2 = new JSONObject();
             res2.put("arrival_time", total_time);
 
-            res.put("data", res2.toString());
+            res.put("data", res2);
             res.put("status", "OK");
             String myResponse = res.toString();
             r.sendResponseHeaders(200, myResponse.length());
@@ -145,6 +149,7 @@ public class DriverTime implements HttpHandler {
 
             
         } catch (Exception e) {
+            e.printStackTrace();
             Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }
     }

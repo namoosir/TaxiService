@@ -43,7 +43,7 @@ public class navigation implements HttpHandler {
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
-
+        
         String driverUid = uriSplitter[3].split("\\?passengerUid=")[0];
         String passengerUid = uriSplitter[3].split("\\?passengerUid=")[1];
 

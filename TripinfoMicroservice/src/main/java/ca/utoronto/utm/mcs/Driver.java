@@ -106,7 +106,7 @@ public class Driver implements HttpHandler {
             res.put("data", res2);
             res.put(statusCodeString, statusResponse);
             String response = res.toString();
-            r.sendResponseHeaders(statusCode, response.length());
+            r.sendResponseHeaders(Integer.parseInt(statusCodeString), response.length());
             OutputStream os = r.getResponseBody();
             os.write(response.getBytes());
             os.close();
