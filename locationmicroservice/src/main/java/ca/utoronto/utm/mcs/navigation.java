@@ -36,6 +36,9 @@ public class navigation implements HttpHandler {
         String requestURI = r.getRequestURI().toString();
         String[] uriSplitter = requestURI.split("/");
         JSONObject res = new JSONObject();
+        JSONObject res2 = new JSONObject();
+        JSONObject resFinal = new JSONObject();
+
         
         if (uriSplitter.length != 4) {
             Utils.error(statusCode, res, r, "BAD REQUEST");
@@ -79,6 +82,10 @@ public class navigation implements HttpHandler {
 
             roadCheckResult = session.run(routeQuery, parameters("x", road1, "y", road2));
 
+            int total_time = roadCheckResult.next().get("dist").asInt();
+
+            roadCheckResult = session.run(routeQuery, parameters("x", road1, "y", road2));
+
             Path a = roadCheckResult.next().get("p").asPath();
 
             Segment hi = null;
@@ -102,10 +109,14 @@ public class navigation implements HttpHandler {
             
             path.add(curRoad);
 
-            res.put("data", path);
-            res.put("status", "OK");
+            res2.put("route",path);
+            res2.put("total_time", total_time);
 
-            String response = res.toString();
+            resFinal.put("data", res2);
+            resFinal.put("status", "OK");
+
+            String response = resFinal.toString();
+
             r.sendResponseHeaders(200, response.length());
             OutputStream os = r.getResponseBody();
             os.write(response.getBytes());
