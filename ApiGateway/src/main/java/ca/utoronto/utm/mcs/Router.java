@@ -11,17 +11,33 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class Trip implements HttpHandler{
+
+public class Router implements HttpHandler{
 
     HttpClient httpClient;
 
-    public Trip() throws ClassNotFoundException {
+    public Router() throws ClassNotFoundException {
         httpClient = Utils.httpClient;
     }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String url = "http://tripinfomicroservice:8000" + exchange.getRequestURI().toString();
+        String[] uri = exchange.getRequestURI().toString().split("/");
+        String url = "";
+
+        switch (uri[0]) {
+            case "location":
+                url = "http://locationmicroservice:8000";
+                break;
+            case "trip":
+                url = "http://tripinfomicroservice:8000";
+                break;
+            case "user":
+                url = "http://usermicroservice:8000";
+                break;
+        }
+
+        url += exchange.getRequestURI().toString();
         JSONObject res = new JSONObject();
 
         try {
