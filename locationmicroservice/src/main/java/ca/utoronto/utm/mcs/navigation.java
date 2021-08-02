@@ -7,14 +7,10 @@ import org.json.*;
 import org.neo4j.driver.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.neo4j.driver.Record;
 import org.neo4j.driver.types.Path;
 import org.neo4j.driver.types.Path.Segment;
 
-import jdk.jshell.execution.Util;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -41,6 +37,7 @@ public class navigation implements HttpHandler {
 
         
         if (uriSplitter.length != 4) {
+            res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -49,6 +46,7 @@ public class navigation implements HttpHandler {
         String passengerUid = uriSplitter[3].split("\\?passengerUid=")[1];
 
         if (driverUid.isEmpty() || passengerUid.isBlank()) {
+            res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -66,6 +64,7 @@ public class navigation implements HttpHandler {
             Result r1 = session.run(getDriverQuery, parameters("z", driverUid));
         
             if (!r1.hasNext() || !r2.hasNext()) {
+                res.put("data", new JSONObject());
                 Utils.error(404, res, r, "USER NOT FOUND");
                 return;
             }
@@ -78,7 +77,10 @@ public class navigation implements HttpHandler {
 
             Result roadCheckResult = session.run(routeQuery, parameters("x", road1, "y", road2));
 
-            if (roadCheckResult.list().isEmpty()) Utils.error(404, res, r, "ROUTE NOT FOUND");
+            if (roadCheckResult.list().isEmpty()) {
+                res.put("data", new JSONObject());
+                Utils.error(404, res, r, "ROUTE NOT FOUND");
+            }
 
             roadCheckResult = session.run(routeQuery, parameters("x", road1, "y", road2));
 
@@ -126,6 +128,7 @@ public class navigation implements HttpHandler {
             
         } catch(Exception e) {
             e.printStackTrace();
+            res.put("data", new JSONObject());
             Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }
 

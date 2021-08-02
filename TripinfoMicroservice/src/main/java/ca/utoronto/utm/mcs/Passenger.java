@@ -4,25 +4,14 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.http.HttpClient;
-import java.sql.*;
-import java.util.Iterator;
 import org.bson.Document;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -63,6 +52,7 @@ public class Passenger implements HttpHandler {
 
 
         if (uriSplitter.length != 4) {
+            res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -70,6 +60,7 @@ public class Passenger implements HttpHandler {
         String uid = uriSplitter[3];
 
         if (uid.isEmpty()) {
+            res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -114,6 +105,7 @@ public class Passenger implements HttpHandler {
             
         } catch (Exception e) {
             e.printStackTrace();
+            res.put("data", new JSONObject());
             Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }
     }

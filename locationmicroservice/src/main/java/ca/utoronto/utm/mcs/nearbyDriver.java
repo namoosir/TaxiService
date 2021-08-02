@@ -9,7 +9,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.neo4j.driver.Record;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.neo4j.driver.Values.parameters;
@@ -34,6 +33,7 @@ public class nearbyDriver implements HttpHandler {
         JSONObject res = new JSONObject();
         
         if (uriSplitter.length != 4) {
+            res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -45,6 +45,7 @@ public class nearbyDriver implements HttpHandler {
         System.out.println(radiusString);     
 
         if (uid.isEmpty() || radiusString.isBlank()) {
+            res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -52,6 +53,7 @@ public class nearbyDriver implements HttpHandler {
         try {
             radius = Integer.parseInt(radiusString); 
         } catch(Exception e){
+            res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -71,6 +73,7 @@ public class nearbyDriver implements HttpHandler {
                 Result locationRes = session.run(getLocationQuery, parameters("a", true, "x", latitude, "y", longitude, "z", radius*1000));
 
                 if (locationRes.hasNext()) {
+                    JSONObject res2 = new JSONObject();
                     List<Record> drivers = locationRes.list();
                     for (Record record : drivers) {
                         JSONObject d = new JSONObject();
@@ -82,8 +85,9 @@ public class nearbyDriver implements HttpHandler {
                         d.put("longitude",longitudeString);
                         d.put("latitude", latitudeString);
                         d.put("street", streetString);
-                        res.put(id, d);                        
-                    }     
+                        res2.put(id, d);                        
+                    }  
+                    res.put("data", res2);   
                     res.put("status", "OK");
 
                     String response = res.toString();
@@ -93,13 +97,16 @@ public class nearbyDriver implements HttpHandler {
                     os.close();     
                 }
                 else {
+                    res.put("data", new JSONObject());
                     Utils.error(404, res, r, "NO NEARBY DRIVERS FOUND");
                 }
             } else {
+                res.put("data", new JSONObject());
                 Utils.error(404, res, r, "USER NOT FOUND");
             }
         } catch (Exception e) {
             e.printStackTrace();
+            res.put("data", new JSONObject());
             Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }
     }

@@ -4,20 +4,11 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.http.HttpClient;
-import java.sql.*;
-import java.util.Iterator;
 import org.bson.Document;
-
-import java.util.Arrays;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -56,6 +47,7 @@ public class Confirm implements HttpHandler {
       int startTime;
 
       if (!req.has("driver") || !req.has("passenger") || !req.has("startTime")){
+         res.put("data", "");
          Utils.error(statusCode, res, r, "BAD REQUEST");
          return;
       }
@@ -67,6 +59,7 @@ public class Confirm implements HttpHandler {
          startTime = Integer.parseInt(req.getString("startTime"));
          if(String.valueOf(startTime).length()!=10) throw new Exception();
       } catch (Exception e) {
+         res.put("data", "");
          Utils.error(statusCode, res, r, "BAD REQUEST");
          return;
       }
@@ -97,7 +90,8 @@ public class Confirm implements HttpHandler {
          os.close();  
          
       } catch (Exception e) {
-         Utils.error(statusCode, res, r, "INTERNAL SERVER ERROR");
+         res.put("data", "");
+         Utils.error(500, res, r, "INTERNAL SERVER ERROR");
       }
 
 

@@ -11,15 +11,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.*;
-import java.sql.*;
 import java.util.*;
 
 import org.bson.Document;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -59,6 +54,7 @@ public class Request implements HttpHandler {
         ArrayList<String> finalBody = new ArrayList<String>();
 
         if(!req.has("uid") || !req.has("radius")){
+            res.put("data", new ArrayList<String>());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -68,6 +64,7 @@ public class Request implements HttpHandler {
             radius = Integer.parseInt(req.getString("radius"));
 
         } catch (Exception e) {
+            res.put("data", new ArrayList<String>());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -90,14 +87,15 @@ public class Request implements HttpHandler {
 
             if(response.statusCode()!=200){
                 String errorResponse = jsonObject.getString("status");
+                res.put("data", new ArrayList<String>());
                 Utils.error(response.statusCode(), res, r, errorResponse);
                 return;
             }
 
-            Iterator<String> keys = jsonObject.keys();
+            Iterator<?> keys = jsonObject.keys();
 
             while(keys.hasNext()) {
-                String key = keys.next();
+                String key = (String)keys.next();
                 if (!key.equals("status")){
                     finalBody.add(key);
                 }
@@ -112,6 +110,7 @@ public class Request implements HttpHandler {
             os.close();  
             
         } catch (Exception e) {
+            res.put("data", new ArrayList<String>());
             Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }
     }

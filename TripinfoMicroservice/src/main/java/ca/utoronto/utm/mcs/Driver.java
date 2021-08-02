@@ -4,25 +4,14 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.http.HttpClient;
-import java.sql.*;
-import java.util.Iterator;
 import org.bson.Document;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -61,8 +50,8 @@ public class Driver implements HttpHandler {
         String statusCodeString;
         ArrayList<JSONObject> finalAns = new ArrayList<JSONObject>();
 
-
         if (uriSplitter.length != 4) {
+            res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -70,6 +59,7 @@ public class Driver implements HttpHandler {
         String uid = uriSplitter[3];
 
         if (uid.isEmpty()) {
+            res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
         }
@@ -77,19 +67,18 @@ public class Driver implements HttpHandler {
         try {
             BasicDBObject query = new BasicDBObject();
             query.put("driver", uid);
-    
+
             FindIterable<Document> docs = trip.find(query);
-    
+
             if (docs.first() == null) {
                 statusCodeString = "404";
                 statusResponse = "NO TRIPS FOUND";
-            }
-            else{
+            } else {
                 statusCodeString = "200";
                 statusResponse = "OK";
             }
-    
-            for(Document doc : docs) {
+
+            for (Document doc : docs) {
                 JSONObject cur = new JSONObject();
                 cur.put("_id", doc.getObjectId("_id").toString());
                 cur.put("distance", doc.getInteger("distance"));
@@ -101,7 +90,7 @@ public class Driver implements HttpHandler {
                 cur.put("driver", doc.getString("driver"));
                 finalAns.add(cur);
             }
-     
+
             res2.put("trips", finalAns);
             res.put("data", res2);
             res.put(statusCodeString, statusResponse);
@@ -110,8 +99,9 @@ public class Driver implements HttpHandler {
             OutputStream os = r.getResponseBody();
             os.write(response.getBytes());
             os.close();
-            
+
         } catch (Exception e) {
+            res.put("data", new JSONObject());
             Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }
     }
