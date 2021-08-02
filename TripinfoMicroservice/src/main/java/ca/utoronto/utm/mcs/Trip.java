@@ -45,7 +45,7 @@ public class Trip implements HttpHandler {
     public void handle(HttpExchange r) throws IOException {
        try {
           if (r.getRequestMethod().equals("PATCH")) {
-             handleTripReq(r);
+            handleTripReq(r);
           }
        } catch (Exception e) {
           System.out.println("Error Occurred! Msg:   " + e);
@@ -99,11 +99,13 @@ public class Trip implements HttpHandler {
 
         try {
             BasicDBObject query = new BasicDBObject();
-            query.put("_id", uid);
+            System.out.println("\n\n\n" + uid);
+            ObjectId id = new ObjectId(uid);
+            query.put("_id", id);
     
             FindIterable<Document> docs = trip.find(query); 
-               
-            if (docs == null) {
+            
+            if (docs.first() == null) {
                 Utils.error(404, res, r, "NO TRIPS FOUND");
                 return;
             }
@@ -115,7 +117,6 @@ public class Trip implements HttpHandler {
                 doc.put("endTime", endTime);
                 doc.put("timeElapsed", timeElapsed);
                 doc.put("driverPayout", driverPayout);
-                trip.replaceOne(query, doc);
             }
 
             res.put("status", "OK");
@@ -127,6 +128,7 @@ public class Trip implements HttpHandler {
             os.close();  
             
         } catch (Exception e) {
+            e.printStackTrace();
             Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }
     }

@@ -59,7 +59,7 @@ public class Driver implements HttpHandler {
         JSONObject res2 = new JSONObject();
         String statusResponse;
         String statusCodeString;
-        ArrayList<String> finalAns = new ArrayList<String>();
+        ArrayList<JSONObject> finalAns = new ArrayList<JSONObject>();
 
 
         if (uriSplitter.length != 4) {
@@ -80,7 +80,7 @@ public class Driver implements HttpHandler {
     
             FindIterable<Document> docs = trip.find(query);
     
-            if (docs == null) {
+            if (docs.first() == null) {
                 statusCodeString = "404";
                 statusResponse = "NO TRIPS FOUND";
             }
@@ -90,11 +90,20 @@ public class Driver implements HttpHandler {
             }
     
             for(Document doc : docs) {
-                finalAns.add(doc.toString());
+                JSONObject cur = new JSONObject();
+                cur.put("_id", doc.getObjectId("_id").toString());
+                cur.put("distance", doc.getInteger("distance"));
+                cur.put("totalCost", doc.getDouble("totalCost"));
+                cur.put("discount", doc.getDouble("discount"));
+                cur.put("startTime", doc.getInteger("startTime"));
+                cur.put("endTime", doc.getInteger("endTime"));
+                cur.put("TimeElapsed", doc.getString("timeElapsed"));
+                cur.put("driver", doc.getString("driver"));
+                finalAns.add(cur);
             }
      
             res2.put("trips", finalAns);
-            res.put("data", res2.toString());
+            res.put("data", res2);
             res.put(statusCodeString, statusResponse);
             String response = res.toString();
             r.sendResponseHeaders(statusCode, response.length());
