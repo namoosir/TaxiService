@@ -32,7 +32,7 @@ public class nearbyDriver implements HttpHandler {
         String[] uriSplitter = requestURI.split("/");
         JSONObject res = new JSONObject();
         
-        if (uriSplitter.length != 4) {
+        if (uriSplitter.length != 4 || uriSplitter[3].split("\\?radius=").length != 2 ) {
             res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;

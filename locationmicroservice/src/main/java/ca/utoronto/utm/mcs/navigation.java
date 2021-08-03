@@ -36,7 +36,7 @@ public class navigation implements HttpHandler {
         JSONObject resFinal = new JSONObject();
 
         
-        if (uriSplitter.length != 4) {
+        if (uriSplitter.length != 4 || uriSplitter[3].split("\\?passengerUid=").length!=2) {
             res.put("data", new JSONObject());
             Utils.error(statusCode, res, r, "BAD REQUEST");
             return;
@@ -90,26 +90,43 @@ public class navigation implements HttpHandler {
 
             Path a = roadCheckResult.next().get("p").asPath();
 
-            Segment hi = null;
-
-            for (Segment segment : a) { 
-                if(segment.end().get("name").asString() == road2) break;
-                JSONObject curRoad = new JSONObject();   
-                curRoad.put("street", segment.start().get("name").asString());                
-                curRoad.put("time", segment.relationship().get("travel_time").asInt());
-                curRoad.put("traffic", segment.relationship().get("is_traffic").asBoolean());
-                path.add(curRoad);  
-                hi = segment;      
-            }
+            Segment hi = a.iterator().next();
 
             JSONObject curRoad = new JSONObject(); 
             curRoad.put("street", hi.start().get("name").asString()); 
-            curRoad.put("time", hi.relationship().get("travel_time").asInt());
+            curRoad.put("time", 0);
             curRoad.put("traffic", hi.relationship().get("is_traffic").asBoolean());
-            curRoad.put("street", hi.end().get("name").asString());                
+            path.add(curRoad);      
+
+            for (Segment segment : a) { 
+                if(segment.end().get("name").asString() == road2) break;
+                curRoad = new JSONObject();   
+                curRoad.put("street", segment.end().get("name").asString());                
+                curRoad.put("time", segment.relationship().get("travel_time").asInt());
+                curRoad.put("traffic", segment.relationship().get("is_traffic").asBoolean());
+                path.add(curRoad);     
+            }      
+
+            // Segment hi = null;
+
+            // for (Segment segment : a) { 
+            //     if(segment.end().get("name").asString() == road2) break;
+            //     JSONObject curRoad = new JSONObject();   
+            //     curRoad.put("street", segment.start().get("name").asString());                
+            //     curRoad.put("time", segment.relationship().get("travel_time").asInt());
+            //     curRoad.put("traffic", segment.relationship().get("is_traffic").asBoolean());
+            //     path.add(curRoad);  
+            //     hi = segment;      
+            // }
+
+            // JSONObject curRoad = new JSONObject(); 
+            // curRoad.put("street", hi.start().get("name").asString()); 
+            // curRoad.put("time", hi.relationship().get("travel_time").asInt());
+            // curRoad.put("traffic", hi.relationship().get("is_traffic").asBoolean());
+            // curRoad.put("street", hi.end().get("name").asString());                
 
             
-            path.add(curRoad);
+            // path.add(curRoad);
 
             res2.put("route",path);
             res2.put("total_time", total_time);

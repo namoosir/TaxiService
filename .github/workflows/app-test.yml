@@ -6,6 +6,15 @@
 name: App Tests
 
 # TODO make it so that the actions run on push and pull requests on your main/master branch and the develop branch
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+   branches:
+      - develop
+      - main
 
 jobs:
   CI:
@@ -15,6 +24,8 @@ jobs:
       
       # TODO use checkout V2 to checkout your repo
       # add your statement(s) here
+      - name: Checkout my repo
+        uses: actions/checkout@v2
 
       # Do not modify this step
       - name: Clean up running environment
@@ -23,19 +34,29 @@ jobs:
 
       # TODO make a step to build and run your docker containers. Please make sure to use the -d flag when you start the containers so the step doesnt hang.
       # add your statement(s) here
+      - name: run Docker Containers
+        run: docker-compose -f "../../docker-compose.yml" up -d --build
 
       # TODO make a step to run the tests for location microservice (use mvn)
       # add your statement(s) here
+      - name: Run location microservice tests
+        run: mvn ../../locationmicroservice/test
       
       # TODO make a step to run the tests for tripinfo microservice (use mvn)
       # add your statement(s) here
+      - name: Run tripinfo microservice tests
+        run: mvn ../../TripinfoMicroservice/test
       
       # TODO make a step to run the tests for user microservice (use mvn)
       # add your statement(s) here
+      - name: Run user microservice tests
+        run: mvn ../../UserMicroservice/test
       
       # TODO make a step to shut down your docker containers. Please use the --remove-orphans flag.
       # DO NOT RUN YOUR ACTIONS IF YOU HAVENT COMPLETED THIS STEP
       # add your statement(s) here
+      - name: Shut down docker containers
+        run: docker-compose -f "../../docker-compose.yml" down --remove-orphans
 
       # Do not modify this step
       - name: Clean up running environment on exit

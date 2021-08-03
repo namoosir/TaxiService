@@ -54,8 +54,8 @@ public class Confirm implements HttpHandler {
 
 
       try {
-         uidDriver = req.getJSONObject("driver").getString("uid");
-         uidPassenger = req.getJSONObject("passenger").getString("uid");
+         uidDriver = req.getString("driver");
+         uidPassenger = req.getString("passenger");
          startTime = Integer.parseInt(req.getString("startTime"));
          if(String.valueOf(startTime).length()!=10) throw new Exception();
       } catch (Exception e) {
