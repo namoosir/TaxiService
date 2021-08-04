@@ -10,7 +10,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-//import java.util.Iterator;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 
 public class Router implements HttpHandler{
 
@@ -18,6 +25,20 @@ public class Router implements HttpHandler{
 
     public Router() throws ClassNotFoundException {
         httpClient = Utils.httpClient;
+    }
+
+    private static HttpRequest.BodyPublisher buildFormDataFromMap(Map<Object, Object> data) {
+        var builder = new StringBuilder();
+        for (Map.Entry<Object, Object> entry : data.entrySet()) {
+            if (builder.length() > 0) {
+                builder.append("&");
+            }
+            builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
+            builder.append("=");
+            builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
+        }
+        System.out.println(builder.toString());
+        return HttpRequest.BodyPublishers.ofString(builder.toString());
     }
 
     @Override
@@ -44,7 +65,18 @@ public class Router implements HttpHandler{
         System.out.println("URL is " + url);
 
         try {
-            
+            // switch (exchange.getRequestMethod()) {
+            //     case "POST":
+            //     break;
+            //     case "GET":
+            //     break;
+            //     case "PUT":
+            //     break;
+            //     case "DELETE":
+            //     break;
+            //     case "PATCH":
+            //     break;
+            // }
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 

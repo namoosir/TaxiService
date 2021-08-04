@@ -74,10 +74,12 @@ public class Passenger implements HttpHandler {
             if (docs.first() == null) {
                 statusCodeString = "404";
                 statusResponse = "NO TRIPS FOUND";
+                statusCode = 404;
             }
             else{
                 statusCodeString = "200";
                 statusResponse = "OK";
+                statusCode = 200;
             }
     
             for(Document doc : docs) {
