@@ -82,7 +82,7 @@ public class Trip implements HttpHandler {
             totalCost = Double.parseDouble(req.getString("totalCost"));
             discount = Double.parseDouble(req.getString("discount"));
             endTime = Integer.parseInt(req.getString("endTime"));
-            if(String.valueOf(endTime).length()!=10) throw new Exception();
+            if(String.valueOf(endTime).length()!=10 ||discount>100 || discount<0 ) throw new Exception();
             timeElapsed = req.getString("timeElapsed");
             driverPayout = Double.parseDouble(req.getString("driverPayout"));
         } catch (Exception e) {

@@ -84,10 +84,11 @@ public class Passenger implements HttpHandler {
     
             for(Document doc : docs) {
                 JSONObject cur = new JSONObject();
+                System.out.println(doc.toJson());
                 cur.put("_id", doc.getObjectId("_id").toString());
                 cur.put("distance", doc.getInteger("distance"));
                 cur.put("totalCost", doc.getDouble("totalCost"));
-                cur.put("discount", doc.getDouble("discount"));
+                cur.put("discount", doc.getInteger("discount"));
                 cur.put("startTime", doc.getInteger("startTime"));
                 cur.put("endTime", doc.getInteger("endTime"));
                 cur.put("TimeElapsed", doc.getString("timeElapsed"));

@@ -35,18 +35,13 @@ public class AppTest {
    .connectTimeout(Duration.ofSeconds(10))
    .build();
 
-   private static HttpRequest.BodyPublisher buildFormDataFromMap(Map<Object, Object> data) {
-      var builder = new StringBuilder();
+   private static HttpRequest.BodyPublisher buildFormDataFromMap(Map<Object, Object> data) throws JSONException {
+      JSONObject jsonb = new JSONObject();
       for (Map.Entry<Object, Object> entry : data.entrySet()) {
-          if (builder.length() > 0) {
-              builder.append("&");
-          }
-          builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
-          builder.append("=");
-          builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
+          jsonb.put(entry.getKey().toString(), entry.getValue());
+
       }
-      System.out.println(builder.toString());
-      return HttpRequest.BodyPublishers.ofString(builder.toString());
+      return HttpRequest.BodyPublishers.ofString(jsonb.toString());
   }
 
   @BeforeAll
@@ -91,7 +86,7 @@ public class AppTest {
    }
 
    @Test
-   public void confirmCorrectBodyTest() throws IOException, InterruptedException {      
+   public void confirmCorrectBodyTest() throws IOException, InterruptedException,JSONException {      
     String url = "http://localhost:8004/trip/confirm";
     Map<Object, Object> data = new HashMap<>();
       data = new HashMap<>();
@@ -111,7 +106,7 @@ public class AppTest {
    }
 
    @Test
-   public void TripReqtBadTest() throws IOException, InterruptedException {
+   public void TripReqtBadTest() throws IOException, InterruptedException ,JSONException{
       String url = "http://localhost:8004/trip/request";
       Map<Object, Object> data = new HashMap<>();
       data = new HashMap<>();
@@ -125,7 +120,7 @@ public class AppTest {
    }
 
    @Test
-   public void TripReq200Test() throws IOException, InterruptedException{
+   public void TripReq200Test() throws IOException, InterruptedException,JSONException{
       
     String url = "http://localhost:8004/trip/request";
     Map<Object, Object> data = new HashMap<>();
@@ -158,7 +153,7 @@ public class AppTest {
    }
 
    @Test
-   public void tripCorrectBodyTest() throws IOException, InterruptedException {      
+   public void tripCorrectBodyTest() throws IOException, InterruptedException,JSONException {      
     String url = "http://localhost:8004/trip/" + need_id;
     Map<Object, Object> data = new HashMap<>();
       data = new HashMap<>();

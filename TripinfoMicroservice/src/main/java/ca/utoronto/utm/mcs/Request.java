@@ -90,15 +90,13 @@ public class Request implements HttpHandler {
                 res.put("data", new ArrayList<String>());
                 Utils.error(response.statusCode(), res, r, errorResponse);
                 return;
-            }
-
-            Iterator<?> keys = jsonObject.keys();
+            }   
+            JSONObject data = jsonObject.getJSONObject("data");
+            Iterator<?> keys = data.keys();
 
             while(keys.hasNext()) {
                 String key = (String)keys.next();
-                if (!key.equals("status")){
-                    finalBody.add(key);
-                }
+                finalBody.add(key);
             }
 
             res.put("data", finalBody);
