@@ -36,7 +36,9 @@ jobs:
       # add your statement(s) here
       - name: run Docker Containers
         run: |
+          ls
           cd ../..
+          ls
           docker-compose -f "docker-compose.yml" up -d --build
         
       - name: Sleep for 2 min
