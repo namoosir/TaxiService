@@ -35,28 +35,46 @@ jobs:
       # TODO make a step to build and run your docker containers. Please make sure to use the -d flag when you start the containers so the step doesnt hang.
       # add your statement(s) here
       - name: run Docker Containers
-        run: docker-compose -f "../../docker-compose.yml" up -d --build
+        run: |
+          cd .../..
+          docker-compose -f "docker-compose.yml" up -d --build
+        
+      - name: Sleep for 2 min
+        run: sleep 160s
+        shell: bash
 
       # TODO make a step to run the tests for location microservice (use mvn)
       # add your statement(s) here
       - name: Run location microservice tests
-        run: mvn ../../locationmicroservice/test
+        run: |
+          cd ../../locationmicroservice
+          mvn test
+          timeout-minutes: 8
+
       
       # TODO make a step to run the tests for tripinfo microservice (use mvn)
       # add your statement(s) here
       - name: Run tripinfo microservice tests
-        run: mvn ../../TripinfoMicroservice/test
+        run: |
+          cd ../../TripinfoMicroservice
+          mvn test
+          timeout-minutes: 8
       
       # TODO make a step to run the tests for user microservice (use mvn)
       # add your statement(s) here
       - name: Run user microservice tests
-        run: mvn ../../UserMicroservice/test
+        run: |
+          cd ../../UserMicroservice
+          mvn test
+          timeout-minutes: 8
       
       # TODO make a step to shut down your docker containers. Please use the --remove-orphans flag.
       # DO NOT RUN YOUR ACTIONS IF YOU HAVENT COMPLETED THIS STEP
       # add your statement(s) here
       - name: Shut down docker containers
-        run: docker-compose -f "../../docker-compose.yml" down --remove-orphans
+        run: |
+          cd .../..
+          docker-compose -f "docker-compose.yml" down --remove-orphans
 
       # Do not modify this step
       - name: Clean up running environment on exit
