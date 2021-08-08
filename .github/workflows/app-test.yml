@@ -36,9 +36,6 @@ jobs:
       # add your statement(s) here
       - name: run Docker Containers
         run: |
-          ls
-          cd ../..
-          ls
           docker-compose -f "docker-compose.yml" up -d --build
         
       - name: Sleep for 2 min
@@ -49,7 +46,7 @@ jobs:
       # add your statement(s) here
       - name: Run location microservice tests
         run: |
-          cd ../../locationmicroservice
+          cd ./locationmicroservice
           mvn test
           timeout-minutes: 8
 
@@ -58,7 +55,7 @@ jobs:
       # add your statement(s) here
       - name: Run tripinfo microservice tests
         run: |
-          cd ../../TripinfoMicroservice
+          cd ./TripinfoMicroservice
           mvn test
           timeout-minutes: 8
       
@@ -66,7 +63,7 @@ jobs:
       # add your statement(s) here
       - name: Run user microservice tests
         run: |
-          cd ../../UserMicroservice
+          cd ./UserMicroservice
           mvn test
           timeout-minutes: 8
       
@@ -75,7 +72,6 @@ jobs:
       # add your statement(s) here
       - name: Shut down docker containers
         run: |
-          cd ../..
           docker-compose -f "docker-compose.yml" down --remove-orphans
 
       # Do not modify this step
