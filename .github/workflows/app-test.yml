@@ -36,7 +36,7 @@ jobs:
       # add your statement(s) here
       - name: run Docker Containers
         run: |
-          cd .../..
+          cd ../..
           docker-compose -f "docker-compose.yml" up -d --build
         
       - name: Sleep for 2 min
@@ -73,7 +73,7 @@ jobs:
       # add your statement(s) here
       - name: Shut down docker containers
         run: |
-          cd .../..
+          cd ../..
           docker-compose -f "docker-compose.yml" down --remove-orphans
 
       # Do not modify this step
