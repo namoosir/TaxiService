@@ -83,14 +83,14 @@ public class Router implements HttpHandler{
                 JSONObject req = new JSONObject(body);
 
                 Iterator<?> keys = req.keys();
-
+                System.out.println(req.toString());
+                 
                 while(keys.hasNext()) {
                     String key = (String)keys.next();
                     data.put(key, req.get(key));
                     System.out.println(key);
                     System.out.println(req.get(key));
                 }
-                
                 HttpRequest request =  HttpRequest.newBuilder().uri(URI.create(url)).method(exchange.getRequestMethod(), buildFormDataFromMap(data)).build();
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     

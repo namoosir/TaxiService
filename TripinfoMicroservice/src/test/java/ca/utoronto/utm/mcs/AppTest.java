@@ -161,8 +161,8 @@ public class AppTest {
       data.put("endTime", 1);
       data.put("timeElapsed", "1234650729");
       data.put("discount", 0);
-      data.put("totalCost", 50.0);
-      data.put("driverCost", 20.0);
+      data.put("totalCost", 50.2);
+      data.put("driverCost", 20.2);
 
     HttpRequest request = HttpRequest.newBuilder()
     .method("PATCH", buildFormDataFromMap(data))
