@@ -72,7 +72,7 @@ public class Confirm implements HttpHandler {
          .append("distance", -1)
          .append("totalCost", -1.0)
          .append("endTime", -1)
-         .append("timeElapsed", -1)
+         .append("timeElapsed", "-1")
          .append("driverPayout", -1.0)
          .append("discount", -1);
    

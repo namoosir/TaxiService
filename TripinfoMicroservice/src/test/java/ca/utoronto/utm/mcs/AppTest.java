@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.bson.types.ObjectId;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
@@ -141,7 +142,7 @@ public class AppTest {
          data = new HashMap<>();
          data.put("distance", 2);
          data.put("endTime", 1);
-         data.put("timeElapsed", 3);
+         data.put("timeElapsed", "3");
       HttpRequest request = HttpRequest.newBuilder()
       .method("PATCH", buildFormDataFromMap(data))
       .uri(URI.create(url))
@@ -177,7 +178,8 @@ public class AppTest {
 
    @Test    
    public void PassengerBadTest() throws IOException, InterruptedException {
-      String url = "http://localhost:8004/trip/passenger/50000";
+      ObjectId id = new ObjectId();
+      String url = "http://localhost:8004/trip/passenger/" + id;
       
       HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(url)).build();    
       HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
