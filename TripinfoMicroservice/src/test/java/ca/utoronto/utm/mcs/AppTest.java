@@ -162,7 +162,7 @@ public class AppTest {
       data.put("timeElapsed", "1234650729");
       data.put("discount", 0);
       data.put("totalCost", 50.2);
-      data.put("driverCost", 20.2);
+      data.put("driverPayout", 20.2);
 
     HttpRequest request = HttpRequest.newBuilder()
     .method("PATCH", buildFormDataFromMap(data))
@@ -226,13 +226,13 @@ public class AppTest {
       HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(url)).build();    
       HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
   
-      assertEquals(response.statusCode(), 404);        
+      assertEquals(response.statusCode(), 500);        
    }
 
    @Test
    public void DriverTime200Test() throws IOException, InterruptedException{
       
-    String url = "http://localhost:8004/trip/driver/" + need_id;
+    String url = "http://localhost:8004/trip/driverTime/" + need_id;
 
     
     HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create(url)).build();    

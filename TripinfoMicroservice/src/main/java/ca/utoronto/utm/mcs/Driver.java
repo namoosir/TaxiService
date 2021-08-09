@@ -83,7 +83,7 @@ public class Driver implements HttpHandler {
                 cur.put("_id", doc.getObjectId("_id").toString());
                 cur.put("distance", doc.getInteger("distance"));
                 cur.put("totalCost", doc.getDouble("totalCost"));
-                cur.put("discount", doc.getDouble("discount"));
+                cur.put("discount", doc.getInteger("discount"));
                 cur.put("startTime", doc.getInteger("startTime"));
                 cur.put("endTime", doc.getInteger("endTime"));
                 cur.put("TimeElapsed", doc.getString("timeElapsed"));
@@ -101,6 +101,7 @@ public class Driver implements HttpHandler {
             os.close();
 
         } catch (Exception e) {
+            e.printStackTrace();
             res.put("data", new JSONObject());
             Utils.error(500, res, r, "INTERNAL SERVER ERROR");
         }

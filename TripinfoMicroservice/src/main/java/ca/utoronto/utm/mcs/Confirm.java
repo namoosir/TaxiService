@@ -45,7 +45,7 @@ public class Confirm implements HttpHandler {
       String uidDriver;
       String uidPassenger;
       int startTime;
-
+      System.out.println(req.toString());
       if (!req.has("driver") || !req.has("passenger") || !req.has("startTime")){
          res.put("data", "");
          Utils.error(statusCode, res, r, "BAD REQUEST");
@@ -70,10 +70,10 @@ public class Confirm implements HttpHandler {
          .append("passenger", uidPassenger)
          .append("startTime", startTime)
          .append("distance", -1)
-         .append("totalCost", -1)
+         .append("totalCost", -1.0)
          .append("endTime", -1)
          .append("timeElapsed", -1)
-         .append("driverPayout", -1)
+         .append("driverPayout", -1.0)
          .append("discount", -1);
    
          System.out.println(newdoc.toJson());

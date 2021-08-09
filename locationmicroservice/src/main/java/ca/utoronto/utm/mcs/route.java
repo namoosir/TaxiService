@@ -29,6 +29,7 @@ public class route implements HttpHandler {
       JSONObject res = new JSONObject();
       JSONObject req = new JSONObject(body);
       int statusCode = 400;
+
       if (req.has("roadName1") && req.has("roadName2") && req.has("hasTraffic") && req.has("time")) {
          try (Session session = Utils.driver.session()) {
             String road1 = req.getString("roadName1");
@@ -37,6 +38,12 @@ public class route implements HttpHandler {
             int time = req.getInt("time");
             String preparedStatement = "MATCH (r1:road {name: $x}), (r2:road {name: $y}) "
                   + "CREATE (r1) -[r:ROUTE_TO {travel_time: $z, is_traffic: $u}]->(r2) RETURN type(r)";
+            System.out.println(road1);
+            System.out.println(road2);
+            System.out.println(time);
+            System.out.println(isTraffic);
+
+
             Result result = session.run(preparedStatement,
                   parameters("x", road1, "y", road2, "u", isTraffic, "z", time));
             if (result.hasNext()) {
@@ -48,6 +55,7 @@ public class route implements HttpHandler {
                res.put("status", "INTERNAL SERVER ERROR");
             }
          } catch (Exception e) {
+            e.printStackTrace();
             statusCode = 500;
             res.put("status", "INTERNAL SERVER ERROR");
          }

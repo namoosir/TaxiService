@@ -116,6 +116,13 @@ public class AppTest {
        request = HttpRequest.newBuilder().PUT(buildFormDataFromMap(data)).uri(URI.create(url)).build();
        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+       url = "http://localhost:8004/location/road";
+       data = new HashMap<>();
+       data.put("roadName", "s2");
+       data.put("hasTraffic", true);
+       request = HttpRequest.newBuilder().PUT(buildFormDataFromMap(data)).uri(URI.create(url)).build();
+       httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
        url = "http://localhost:8004/location/hasRoute";
        data = new HashMap<>();
        data.put("roadName1", "s2");
@@ -126,7 +133,7 @@ public class AppTest {
        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
 
-       url = "http://localhost:8004/location/confirm";
+       url = "http://localhost:8004/trip/confirm";
        data = new HashMap<>();
        data.put("driver", "2");
        data.put("passenger", "1");
@@ -143,6 +150,7 @@ public class AppTest {
        data.put("distance", 10);
        data.put("endTime", 1230456789);
        data.put("timeElapsed", "00:12:00");
+       data.put("discount",12);
        data.put("totalCost", 16.25);
        data.put("driverPayout", 10.20);
        request = HttpRequest.newBuilder().uri(URI.create(url)).method("PATCH", buildFormDataFromMap(data)).build();
@@ -201,9 +209,8 @@ public class AppTest {
 
    @Test
    public void navigation200Test() throws IOException, InterruptedException{
-    int uid = 2;
       
-    String url = "http://localhost:8004/navigation/" + uid + "?passengerUid=" + "1";
+    String url = "http://localhost:8004/location/navigation/2?passengerUid=1";
 
     HttpRequest request = HttpRequest.newBuilder()
     .GET()
@@ -212,6 +219,6 @@ public class AppTest {
 
     HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-    assertEquals(response.statusCode(), 400);   
+    assertEquals(response.statusCode(), 200);   
    }
 }

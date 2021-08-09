@@ -82,11 +82,11 @@ public class Router implements HttpHandler{
                 String body = Utils.convert(exchange.getRequestBody());
                 JSONObject req = new JSONObject(body);
 
-                Iterator<?> keys = req.keys();
+                Iterator<String> keys = req.keys();
                 System.out.println(req.toString());
-                 
+                
                 while(keys.hasNext()) {
-                    String key = (String)keys.next();
+                    String key = keys.next();
                     data.put(key, req.get(key));
                     System.out.println(key);
                     System.out.println(req.get(key));
