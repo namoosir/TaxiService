@@ -4,7 +4,7 @@
 
 **Student 2:** kharsamu
 
-**Microservices:** 17/40
+**Microservices:** 21.5/40
 
 **Gateway:** 10/20
 
@@ -15,5 +15,5 @@
 **Other Comments:** 
 
 
-**Total:** 57/90
+**Total:** 61.5/90
 
